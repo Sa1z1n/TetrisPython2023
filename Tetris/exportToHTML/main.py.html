@@ -1,0 +1,499 @@
+<html>
+<head>
+<title>main.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6897bb;}
+.s3 { color: #6a8759;}
+.s4 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+main.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">pygame</span>
+<span class="s0">import </span><span class="s1">pygame </span><span class="s0">as </span><span class="s1">pg</span>
+<span class="s0">import </span><span class="s1">random</span><span class="s0">, </span><span class="s1">time</span><span class="s0">, </span><span class="s1">sys</span>
+<span class="s0">from </span><span class="s1">pygame.locals </span><span class="s0">import </span><span class="s1">*</span>
+<span class="s1">pygame.init()</span>
+
+<span class="s1">fps = </span><span class="s2">25</span>
+<span class="s1">window_w</span><span class="s0">, </span><span class="s1">window_h = </span><span class="s2">700</span><span class="s0">, </span><span class="s2">800</span>
+<span class="s1">block</span><span class="s0">, </span><span class="s1">cup_h</span><span class="s0">, </span><span class="s1">cup_w = </span><span class="s2">30</span><span class="s0">, </span><span class="s2">30</span><span class="s0">, </span><span class="s2">15</span>
+
+<span class="s1">fon = pg.image.load(</span><span class="s3">&quot;Images/Fon.jpg&quot;</span><span class="s1">)</span>
+
+
+<span class="s1">side_freq</span><span class="s0">, </span><span class="s1">down_freq = </span><span class="s2">0.15</span><span class="s0">, </span><span class="s2">0.1  </span><span class="s4"># передвижение в сторону и вниз</span>
+
+
+<span class="s1">side_margin = int((window_w - cup_w * block) / </span><span class="s2">60</span><span class="s1">)</span>
+<span class="s1">top_margin = window_h - (cup_h * block) - </span><span class="s2">5</span>
+
+<span class="s1">colors = ((</span><span class="s2">0</span><span class="s0">, </span><span class="s2">0</span><span class="s0">, </span><span class="s2">225</span><span class="s1">)</span><span class="s0">, </span><span class="s1">(</span><span class="s2">0</span><span class="s0">, </span><span class="s2">225</span><span class="s0">, </span><span class="s2">0</span><span class="s1">)</span><span class="s0">, </span><span class="s1">(</span><span class="s2">225</span><span class="s0">, </span><span class="s2">0</span><span class="s0">, </span><span class="s2">0</span><span class="s1">)</span><span class="s0">, </span><span class="s1">(</span><span class="s2">225</span><span class="s0">, </span><span class="s2">225</span><span class="s0">, </span><span class="s2">0</span><span class="s1">))  </span><span class="s4"># синий, зеленый, красный, желтый</span>
+<span class="s1">lightcolors = ((</span><span class="s2">30</span><span class="s0">, </span><span class="s2">30</span><span class="s0">, </span><span class="s2">255</span><span class="s1">)</span><span class="s0">, </span><span class="s1">(</span><span class="s2">50</span><span class="s0">, </span><span class="s2">255</span><span class="s0">, </span><span class="s2">50</span><span class="s1">)</span><span class="s0">, </span><span class="s1">(</span><span class="s2">255</span><span class="s0">, </span><span class="s2">30</span><span class="s0">, </span><span class="s2">30</span><span class="s1">)</span><span class="s0">,</span>
+               <span class="s1">(</span><span class="s2">255</span><span class="s0">, </span><span class="s2">255</span><span class="s0">, </span><span class="s2">30</span><span class="s1">))  </span><span class="s4"># светло-синий, светло-зеленый, светло-красный, светло-желтый</span>
+
+<span class="s1">white</span><span class="s0">, </span><span class="s1">gray</span><span class="s0">, </span><span class="s1">black = (</span><span class="s2">255</span><span class="s0">, </span><span class="s2">255</span><span class="s0">, </span><span class="s2">255</span><span class="s1">)</span><span class="s0">, </span><span class="s1">(</span><span class="s2">185</span><span class="s0">, </span><span class="s2">185</span><span class="s0">, </span><span class="s2">185</span><span class="s1">)</span><span class="s0">, </span><span class="s1">(</span><span class="s2">0</span><span class="s0">, </span><span class="s2">0</span><span class="s0">, </span><span class="s2">0</span><span class="s1">)</span>
+<span class="s1">brd_color</span><span class="s0">, </span><span class="s1">bg_color</span><span class="s0">, </span><span class="s1">txt_color</span><span class="s0">, </span><span class="s1">title_color</span><span class="s0">, </span><span class="s1">info_color = white</span><span class="s0">, </span><span class="s1">black</span><span class="s0">, </span><span class="s1">white</span><span class="s0">, </span><span class="s1">colors[</span><span class="s2">2</span><span class="s1">]</span><span class="s0">, </span><span class="s1">colors[</span><span class="s2">1</span><span class="s1">]</span>
+
+<span class="s1">fig_w</span><span class="s0">, </span><span class="s1">fig_h = </span><span class="s2">5</span><span class="s0">, </span><span class="s2">5</span>
+<span class="s1">empty = </span><span class="s3">'o'</span>
+
+<span class="s1">figures = {</span><span class="s3">'S'</span><span class="s1">: [[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxxoo'</span><span class="s0">,</span>
+                  <span class="s3">'oxxooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]</span><span class="s0">,</span>
+                 <span class="s1">[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxxoo'</span><span class="s0">,</span>
+                  <span class="s3">'oooxoo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]]</span><span class="s0">,</span>
+           <span class="s3">'Z'</span><span class="s1">: [[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oxxooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxxoo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]</span><span class="s0">,</span>
+                 <span class="s1">[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'oxxooo'</span><span class="s0">,</span>
+                  <span class="s3">'oxoooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]]</span><span class="s0">,</span>
+           <span class="s3">'J'</span><span class="s1">: [[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oxoooo'</span><span class="s0">,</span>
+                  <span class="s3">'oxxxoo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]</span><span class="s0">,</span>
+                 <span class="s1">[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxxoo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]</span><span class="s0">,</span>
+                 <span class="s1">[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oxxxoo'</span><span class="s0">,</span>
+                  <span class="s3">'oooxoo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]</span><span class="s0">,</span>
+                 <span class="s1">[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'oxxooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]]</span><span class="s0">,</span>
+           <span class="s3">'L'</span><span class="s1">: [[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooxoo'</span><span class="s0">,</span>
+                  <span class="s3">'oxxxoo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]</span><span class="s0">,</span>
+                 <span class="s1">[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxxoo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]</span><span class="s0">,</span>
+                 <span class="s1">[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oxxxoo'</span><span class="s0">,</span>
+                  <span class="s3">'oxoooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]</span><span class="s0">,</span>
+                 <span class="s1">[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oxxooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]]</span><span class="s0">,</span>
+           <span class="s3">'I'</span><span class="s1">: [[</span><span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]</span><span class="s0">,</span>
+                 <span class="s1">[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'xxxxoo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]]</span><span class="s0">,</span>
+           <span class="s3">'O'</span><span class="s1">: [[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oxxooo'</span><span class="s0">,</span>
+                  <span class="s3">'oxxooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]]</span><span class="s0">,</span>
+           <span class="s3">'T'</span><span class="s1">: [[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'oxxxoo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]</span><span class="s0">,</span>
+                 <span class="s1">[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxxoo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]</span><span class="s0">,</span>
+                 <span class="s1">[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'oxxxoo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]</span><span class="s0">,</span>
+                 <span class="s1">[</span><span class="s3">'oooooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'oxxooo'</span><span class="s0">,</span>
+                  <span class="s3">'ooxooo'</span><span class="s0">,</span>
+                  <span class="s3">'oooooo'</span><span class="s1">]]}</span>
+
+
+<span class="s0">def </span><span class="s1">pauseScreen():</span>
+    <span class="s1">pause = pg.Surface((</span><span class="s2">800</span><span class="s0">, </span><span class="s2">935</span><span class="s1">)</span><span class="s0">, </span><span class="s1">pg.SRCALPHA)</span>
+    <span class="s1">pause.fill((</span><span class="s2">0</span><span class="s0">, </span><span class="s2">0</span><span class="s0">, </span><span class="s2">255</span><span class="s0">, </span><span class="s2">127</span><span class="s1">))</span>
+    <span class="s1">display_surf.blit(pause</span><span class="s0">, </span><span class="s1">(</span><span class="s2">1</span><span class="s0">, </span><span class="s2">1</span><span class="s1">))</span>
+
+<span class="s0">def </span><span class="s1">runMusic():</span>
+    <span class="s1">pygame.mixer.music.load(</span><span class="s3">&quot;Sounds/Subway.mp3&quot;</span><span class="s1">)</span>
+    <span class="s1">pygame.mixer.music.play(-</span><span class="s2">1</span><span class="s1">)</span>
+
+<span class="s0">def </span><span class="s1">failMusic():</span>
+    <span class="s1">pygame.mixer.music.load(</span><span class="s3">&quot;Sounds/Fail.mp3&quot;</span><span class="s1">)</span>
+    <span class="s1">pygame.mixer.music.play(</span><span class="s2">1</span><span class="s1">)</span>
+
+
+<span class="s0">def </span><span class="s1">main():</span>
+    <span class="s0">global </span><span class="s1">fps_clock</span><span class="s0">, </span><span class="s1">display_surf</span><span class="s0">, </span><span class="s1">basic_font</span><span class="s0">, </span><span class="s1">big_font</span>
+    <span class="s1">pg.init()</span>
+    <span class="s1">fps_clock = pg.time.Clock()</span>
+    <span class="s1">display_surf = pg.display.set_mode((window_w</span><span class="s0">, </span><span class="s1">window_h))</span>
+    <span class="s1">display_surf.blit(fon</span><span class="s0">, </span><span class="s1">(</span><span class="s2">0</span><span class="s0">,</span><span class="s2">0</span><span class="s1">))</span>
+    <span class="s1">basic_font = pg.font.SysFont(</span><span class="s3">'arial'</span><span class="s0">, </span><span class="s2">30</span><span class="s1">)</span>
+    <span class="s1">big_font = pg.font.SysFont(</span><span class="s3">'verdana'</span><span class="s0">, </span><span class="s2">50</span><span class="s1">)</span>
+    <span class="s1">pg.display.set_caption(</span><span class="s3">'Tetris'</span><span class="s1">)</span>
+    <span class="s1">showText(</span><span class="s3">'Tetris'</span><span class="s1">)</span>
+    <span class="s0">while True</span><span class="s1">:  </span><span class="s4"># начинаем игру</span>
+        <span class="s1">runTetris()</span>
+        <span class="s1">pauseScreen()</span>
+        <span class="s1">showText(</span><span class="s3">'Game over'</span><span class="s1">)</span>
+
+
+
+
+<span class="s0">def </span><span class="s1">runTetris():</span>
+    <span class="s0">global </span><span class="s1">event</span>
+    <span class="s1">cup = emptycup()</span>
+    <span class="s1">runMusic()</span>
+
+    <span class="s1">last_move_down = time.time()</span>
+    <span class="s1">last_side_move = time.time()</span>
+    <span class="s1">last_fall = time.time()</span>
+    <span class="s1">going_down = </span><span class="s0">False</span>
+    <span class="s1">going_left = </span><span class="s0">False</span>
+
+    <span class="s1">going_right = </span><span class="s0">False</span>
+    <span class="s1">points = </span><span class="s2">0</span>
+    <span class="s1">level</span><span class="s0">, </span><span class="s1">fall_speed = calcSpeed(points)</span>
+    <span class="s1">fallingFig = getNewFig()</span>
+    <span class="s1">nextFig = getNewFig()</span>
+
+
+    <span class="s0">while True</span><span class="s1">:</span>
+
+
+
+        <span class="s0">if </span><span class="s1">fallingFig == </span><span class="s0">None</span><span class="s1">:</span>
+            <span class="s4"># если нет падающих фигур, генерируем новую</span>
+            <span class="s1">fallingFig = nextFig</span>
+            <span class="s1">nextFig = getNewFig()</span>
+            <span class="s1">last_fall = time.time()</span>
+
+            <span class="s0">if not </span><span class="s1">checkPos(cup</span><span class="s0">, </span><span class="s1">fallingFig):</span>
+                <span class="s0">return </span><span class="s1">failMusic() </span><span class="s4"># если на игровом поле нет свободного места - игра закончена</span>
+        <span class="s1">quitGame()</span>
+        <span class="s0">for </span><span class="s1">event </span><span class="s0">in </span><span class="s1">pg.event.get():</span>
+            <span class="s0">if </span><span class="s1">event.type == KEYUP:</span>
+
+                <span class="s0">if </span><span class="s1">event.key == K_SPACE:</span>
+                    <span class="s1">pauseScreen()</span>
+                    <span class="s1">pg.mixer.music.pause()</span>
+                    <span class="s1">showText(</span><span class="s3">'Pause'</span><span class="s1">)</span>
+                    <span class="s1">last_fall = time.time()</span>
+                    <span class="s1">last_move_down = time.time()</span>
+                    <span class="s1">last_side_move = time.time()</span>
+                    <span class="s0">if </span><span class="s1">event.key == K_SPACE:</span>
+                        <span class="s1">pg.mixer.music.unpause()</span>
+                <span class="s0">elif </span><span class="s1">event.key == K_LEFT:</span>
+                    <span class="s1">going_left = </span><span class="s0">False</span>
+                <span class="s0">elif </span><span class="s1">event.key == K_RIGHT:</span>
+                    <span class="s1">going_right = </span><span class="s0">False</span>
+                <span class="s0">elif </span><span class="s1">event.key == K_DOWN:</span>
+                    <span class="s1">going_down = </span><span class="s0">False</span>
+
+
+
+            <span class="s0">elif </span><span class="s1">event.type == KEYDOWN:</span>
+                <span class="s4"># перемещение фигуры вправо и влево</span>
+                <span class="s0">if </span><span class="s1">event.key == K_LEFT </span><span class="s0">and </span><span class="s1">checkPos(cup</span><span class="s0">, </span><span class="s1">fallingFig</span><span class="s0">, </span><span class="s1">adjX=-</span><span class="s2">1</span><span class="s1">):</span>
+                    <span class="s1">fallingFig[</span><span class="s3">'x'</span><span class="s1">] -= </span><span class="s2">1</span>
+                    <span class="s1">going_left = </span><span class="s0">True</span>
+                    <span class="s1">going_right = </span><span class="s0">False</span>
+                    <span class="s1">last_side_move = time.time()</span>
+
+                <span class="s0">elif </span><span class="s1">event.key == K_RIGHT </span><span class="s0">and </span><span class="s1">checkPos(cup</span><span class="s0">, </span><span class="s1">fallingFig</span><span class="s0">, </span><span class="s1">adjX=</span><span class="s2">1</span><span class="s1">):</span>
+                    <span class="s1">fallingFig[</span><span class="s3">'x'</span><span class="s1">] += </span><span class="s2">1</span>
+                    <span class="s1">going_right = </span><span class="s0">True</span>
+                    <span class="s1">going_left = </span><span class="s0">False</span>
+                    <span class="s1">last_side_move = time.time()</span>
+
+                <span class="s4"># поворачиваем фигуру, если есть место</span>
+                <span class="s0">elif </span><span class="s1">event.key == K_UP:</span>
+                    <span class="s1">fallingFig[</span><span class="s3">'rotation'</span><span class="s1">] = (fallingFig[</span><span class="s3">'rotation'</span><span class="s1">] + </span><span class="s2">1</span><span class="s1">) % len(figures[fallingFig[</span><span class="s3">'shape'</span><span class="s1">]])</span>
+                    <span class="s0">if not </span><span class="s1">checkPos(cup</span><span class="s0">, </span><span class="s1">fallingFig):</span>
+                        <span class="s1">fallingFig[</span><span class="s3">'rotation'</span><span class="s1">] = (fallingFig[</span><span class="s3">'rotation'</span><span class="s1">] - </span><span class="s2">1</span><span class="s1">) % len(figures[fallingFig[</span><span class="s3">'shape'</span><span class="s1">]])</span>
+
+
+                <span class="s4"># ускоряем падение фигуры</span>
+                <span class="s0">elif </span><span class="s1">event.key == K_DOWN:</span>
+                    <span class="s1">going_down = </span><span class="s0">True</span>
+                    <span class="s0">if </span><span class="s1">checkPos(cup</span><span class="s0">, </span><span class="s1">fallingFig</span><span class="s0">, </span><span class="s1">adjY=</span><span class="s2">1</span><span class="s1">):</span>
+                        <span class="s1">fallingFig[</span><span class="s3">'y'</span><span class="s1">] += </span><span class="s2">1</span>
+                    <span class="s1">last_move_down = time.time()</span>
+
+                <span class="s4"># мгновенный сброс вниз</span>
+                <span class="s0">elif </span><span class="s1">event.key == K_RETURN:</span>
+                    <span class="s1">going_down = </span><span class="s0">False</span>
+                    <span class="s1">going_left = </span><span class="s0">False</span>
+                    <span class="s1">going_right = </span><span class="s0">False</span>
+                    <span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(</span><span class="s2">1</span><span class="s0">, </span><span class="s1">cup_h):</span>
+                        <span class="s0">if not </span><span class="s1">checkPos(cup</span><span class="s0">, </span><span class="s1">fallingFig</span><span class="s0">, </span><span class="s1">adjY=i):</span>
+                            <span class="s0">break</span>
+                    <span class="s1">fallingFig[</span><span class="s3">'y'</span><span class="s1">] += i - </span><span class="s2">1</span>
+
+        <span class="s4"># управление падением фигуры при удержании клавиш</span>
+        <span class="s0">if </span><span class="s1">(going_left </span><span class="s0">or </span><span class="s1">going_right) </span><span class="s0">and </span><span class="s1">time.time() - last_side_move &gt; side_freq:</span>
+            <span class="s0">if </span><span class="s1">going_left </span><span class="s0">and </span><span class="s1">checkPos(cup</span><span class="s0">, </span><span class="s1">fallingFig</span><span class="s0">, </span><span class="s1">adjX=-</span><span class="s2">1</span><span class="s1">):</span>
+                <span class="s1">fallingFig[</span><span class="s3">'x'</span><span class="s1">] -= </span><span class="s2">1</span>
+            <span class="s0">elif </span><span class="s1">going_right </span><span class="s0">and </span><span class="s1">checkPos(cup</span><span class="s0">, </span><span class="s1">fallingFig</span><span class="s0">, </span><span class="s1">adjX=</span><span class="s2">1</span><span class="s1">):</span>
+                <span class="s1">fallingFig[</span><span class="s3">'x'</span><span class="s1">] += </span><span class="s2">1</span>
+            <span class="s1">last_side_move = time.time()</span>
+
+        <span class="s0">if </span><span class="s1">going_down </span><span class="s0">and </span><span class="s1">time.time() - last_move_down &gt; down_freq </span><span class="s0">and </span><span class="s1">checkPos(cup</span><span class="s0">, </span><span class="s1">fallingFig</span><span class="s0">, </span><span class="s1">adjY=</span><span class="s2">1</span><span class="s1">):</span>
+            <span class="s1">fallingFig[</span><span class="s3">'y'</span><span class="s1">] += </span><span class="s2">1</span>
+            <span class="s1">last_move_down = time.time()</span>
+
+        <span class="s0">if </span><span class="s1">time.time() - last_fall &gt; fall_speed:  </span><span class="s4"># свободное падение фигуры</span>
+            <span class="s0">if not </span><span class="s1">checkPos(cup</span><span class="s0">, </span><span class="s1">fallingFig</span><span class="s0">, </span><span class="s1">adjY=</span><span class="s2">1</span><span class="s1">):  </span><span class="s4"># проверка &quot;приземления&quot; фигуры</span>
+                <span class="s1">addToCup(cup</span><span class="s0">, </span><span class="s1">fallingFig)  </span><span class="s4"># фигура приземлилась, добавляем ее в содержимое стакана</span>
+                <span class="s1">points += clearCompleted(cup)</span>
+                <span class="s1">level</span><span class="s0">, </span><span class="s1">fall_speed = calcSpeed(points)</span>
+                <span class="s1">fallingFig = </span><span class="s0">None</span>
+            <span class="s0">else</span><span class="s1">:  </span><span class="s4"># фигура пока не приземлилась, продолжаем движение вниз</span>
+                <span class="s1">fallingFig[</span><span class="s3">'y'</span><span class="s1">] += </span><span class="s2">1</span>
+                <span class="s1">last_fall = time.time()</span>
+
+        <span class="s4"># рисуем окно игры со всеми надписями</span>
+        <span class="s1">display_surf.blit(fon</span><span class="s0">, </span><span class="s1">(</span><span class="s2">0</span><span class="s0">, </span><span class="s2">0</span><span class="s1">))</span>
+        <span class="s1">gamecup(cup)</span>
+        <span class="s1">drawInfo(points</span><span class="s0">, </span><span class="s1">level)</span>
+        <span class="s1">drawnextFig(nextFig)</span>
+        <span class="s0">if </span><span class="s1">fallingFig != </span><span class="s0">None</span><span class="s1">:</span>
+            <span class="s1">drawFig(fallingFig)</span>
+        <span class="s1">pg.display.update()</span>
+        <span class="s1">fps_clock.tick(fps)</span>
+
+
+
+
+<span class="s0">def </span><span class="s1">txtObjects(text</span><span class="s0">, </span><span class="s1">font</span><span class="s0">, </span><span class="s1">color):</span>
+    <span class="s1">surf = font.render(text</span><span class="s0">, True, </span><span class="s1">color)</span>
+    <span class="s0">return </span><span class="s1">surf</span><span class="s0">, </span><span class="s1">surf.get_rect()</span>
+
+
+<span class="s0">def </span><span class="s1">stopGame():</span>
+    <span class="s1">pg.quit()</span>
+    <span class="s1">sys.exit()</span>
+
+
+
+<span class="s0">def </span><span class="s1">checkKeys():</span>
+
+    <span class="s1">quitGame()</span>
+
+    <span class="s0">for </span><span class="s1">event </span><span class="s0">in </span><span class="s1">pg.event.get([KEYDOWN</span><span class="s0">, </span><span class="s1">KEYUP]):</span>
+        <span class="s0">if </span><span class="s1">event.type == KEYDOWN:</span>
+            <span class="s0">continue</span>
+        <span class="s0">return </span><span class="s1">event.key</span>
+    <span class="s0">return None</span>
+
+
+<span class="s0">def </span><span class="s1">showText(text):</span>
+    <span class="s1">titleSurf</span><span class="s0">, </span><span class="s1">titleRect = txtObjects(text</span><span class="s0">, </span><span class="s1">big_font</span><span class="s0">, </span><span class="s1">title_color)</span>
+    <span class="s1">titleRect.center = (int(window_w / </span><span class="s2">2</span><span class="s1">) - </span><span class="s2">3</span><span class="s0">, </span><span class="s1">int(window_h / </span><span class="s2">2</span><span class="s1">) - </span><span class="s2">3</span><span class="s1">)</span>
+    <span class="s1">display_surf.blit(titleSurf</span><span class="s0">, </span><span class="s1">titleRect)</span>
+
+    <span class="s1">pressKeySurf</span><span class="s0">, </span><span class="s1">pressKeyRect = txtObjects(</span><span class="s3">'Нажмите любую кнопку, чтобы продолжить'</span><span class="s0">, </span><span class="s1">basic_font</span><span class="s0">, </span><span class="s1">title_color)</span>
+    <span class="s1">pressKeyRect.center = (int(window_w / </span><span class="s2">2</span><span class="s1">)</span><span class="s0">, </span><span class="s1">int(window_h / </span><span class="s2">2</span><span class="s1">) + </span><span class="s2">100</span><span class="s1">)</span>
+    <span class="s1">display_surf.blit(pressKeySurf</span><span class="s0">, </span><span class="s1">pressKeyRect)</span>
+
+    <span class="s0">while </span><span class="s1">checkKeys() == </span><span class="s0">None</span><span class="s1">:</span>
+        <span class="s1">pg.display.update()</span>
+        <span class="s1">fps_clock.tick()</span>
+
+
+<span class="s0">def </span><span class="s1">quitGame():</span>
+    <span class="s0">for </span><span class="s1">event </span><span class="s0">in </span><span class="s1">pg.event.get(QUIT):  </span><span class="s4"># проверка всех событий, приводящих к выходу из игры</span>
+        <span class="s1">stopGame()</span>
+    <span class="s0">for </span><span class="s1">event </span><span class="s0">in </span><span class="s1">pg.event.get(KEYUP):</span>
+        <span class="s0">if </span><span class="s1">event.key == K_ESCAPE:</span>
+            <span class="s1">stopGame()</span>
+        <span class="s1">pg.event.post(event)</span>
+
+
+<span class="s0">def </span><span class="s1">calcSpeed(points):</span>
+    <span class="s4"># вычисляет уровень</span>
+    <span class="s1">level = int(points / </span><span class="s2">5</span><span class="s1">) + </span><span class="s2">1</span>
+    <span class="s1">fall_speed = </span><span class="s2">0.27 </span><span class="s1">- (level * </span><span class="s2">0.02</span><span class="s1">)</span>
+    <span class="s0">return </span><span class="s1">level</span><span class="s0">, </span><span class="s1">fall_speed</span>
+
+
+<span class="s0">def </span><span class="s1">getNewFig():</span>
+    <span class="s4"># возвращает новую фигуру со случайным цветом и углом поворота</span>
+    <span class="s1">shape = random.choice(list(figures.keys()))</span>
+    <span class="s1">newFigure = {</span><span class="s3">'shape'</span><span class="s1">: shape</span><span class="s0">,</span>
+                 <span class="s3">'rotation'</span><span class="s1">: random.randint(</span><span class="s2">0</span><span class="s0">, </span><span class="s1">len(figures[shape]) - </span><span class="s2">1</span><span class="s1">)</span><span class="s0">,</span>
+                 <span class="s3">'x'</span><span class="s1">: int(cup_w / </span><span class="s2">2</span><span class="s1">) - int(fig_w / </span><span class="s2">2</span><span class="s1">)</span><span class="s0">,</span>
+                 <span class="s3">'y'</span><span class="s1">: -</span><span class="s2">2</span><span class="s0">,</span>
+                 <span class="s3">'color'</span><span class="s1">: random.randint(</span><span class="s2">0</span><span class="s0">, </span><span class="s1">len(colors) - </span><span class="s2">1</span><span class="s1">)}</span>
+    <span class="s0">return </span><span class="s1">newFigure</span>
+
+
+<span class="s0">def </span><span class="s1">addToCup(cup</span><span class="s0">, </span><span class="s1">fig):</span>
+    <span class="s0">for </span><span class="s1">x </span><span class="s0">in </span><span class="s1">range(fig_w):</span>
+        <span class="s0">for </span><span class="s1">y </span><span class="s0">in </span><span class="s1">range(fig_h):</span>
+            <span class="s0">if </span><span class="s1">figures[fig[</span><span class="s3">'shape'</span><span class="s1">]][fig[</span><span class="s3">'rotation'</span><span class="s1">]][y][x] != empty:</span>
+                <span class="s1">cup[x + fig[</span><span class="s3">'x'</span><span class="s1">]][y + fig[</span><span class="s3">'y'</span><span class="s1">]] = fig[</span><span class="s3">'color'</span><span class="s1">]</span>
+
+
+<span class="s0">def </span><span class="s1">emptycup():</span>
+    <span class="s4"># создает пустой стакан</span>
+    <span class="s1">cup = []</span>
+
+    <span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(cup_w):</span>
+        <span class="s1">cup.append([empty] * cup_h)</span>
+    <span class="s0">return </span><span class="s1">cup</span>
+
+
+<span class="s0">def </span><span class="s1">incup(x</span><span class="s0">, </span><span class="s1">y):</span>
+    <span class="s0">return </span><span class="s1">x &gt;= </span><span class="s2">0 </span><span class="s0">and </span><span class="s1">x &lt; cup_w </span><span class="s0">and </span><span class="s1">y &lt; cup_h</span>
+
+
+<span class="s0">def </span><span class="s1">checkPos(cup</span><span class="s0">, </span><span class="s1">fig</span><span class="s0">, </span><span class="s1">adjX=</span><span class="s2">0</span><span class="s0">, </span><span class="s1">adjY=</span><span class="s2">0</span><span class="s1">):</span>
+    <span class="s4"># проверяет, находится ли фигура в границах стакана, не сталкиваясь с другими фигурами</span>
+    <span class="s0">for </span><span class="s1">x </span><span class="s0">in </span><span class="s1">range(fig_w):</span>
+        <span class="s0">for </span><span class="s1">y </span><span class="s0">in </span><span class="s1">range(fig_h):</span>
+            <span class="s1">abovecup = y + fig[</span><span class="s3">'y'</span><span class="s1">] + adjY &lt; </span><span class="s2">0</span>
+            <span class="s0">if </span><span class="s1">abovecup </span><span class="s0">or </span><span class="s1">figures[fig[</span><span class="s3">'shape'</span><span class="s1">]][fig[</span><span class="s3">'rotation'</span><span class="s1">]][y][x] == empty:</span>
+                <span class="s0">continue</span>
+            <span class="s0">if not </span><span class="s1">incup(x + fig[</span><span class="s3">'x'</span><span class="s1">] + adjX</span><span class="s0">, </span><span class="s1">y + fig[</span><span class="s3">'y'</span><span class="s1">] + adjY):</span>
+                <span class="s0">return False</span>
+            <span class="s0">if </span><span class="s1">cup[x + fig[</span><span class="s3">'x'</span><span class="s1">] + adjX][y + fig[</span><span class="s3">'y'</span><span class="s1">] + adjY] != empty:</span>
+                <span class="s0">return False</span>
+    <span class="s0">return True</span>
+
+
+<span class="s0">def </span><span class="s1">isCompleted(cup</span><span class="s0">, </span><span class="s1">y):</span>
+    <span class="s4"># проверяем наличие полностью заполненных рядов</span>
+    <span class="s0">for </span><span class="s1">x </span><span class="s0">in </span><span class="s1">range(cup_w):</span>
+        <span class="s0">if </span><span class="s1">cup[x][y] == empty:</span>
+            <span class="s0">return False</span>
+    <span class="s0">return True</span>
+
+
+<span class="s0">def </span><span class="s1">clearCompleted(cup):</span>
+    <span class="s4"># Удаление заполенных рядов и сдвиг верхних рядов вниз</span>
+    <span class="s1">removed_lines = </span><span class="s2">0</span>
+    <span class="s1">y = cup_h - </span><span class="s2">1</span>
+    <span class="s0">while </span><span class="s1">y &gt;= </span><span class="s2">0</span><span class="s1">:</span>
+        <span class="s0">if </span><span class="s1">isCompleted(cup</span><span class="s0">, </span><span class="s1">y):</span>
+            <span class="s0">for </span><span class="s1">pushDownY </span><span class="s0">in </span><span class="s1">range(y</span><span class="s0">, </span><span class="s2">0</span><span class="s0">, </span><span class="s1">-</span><span class="s2">1</span><span class="s1">):</span>
+                <span class="s0">for </span><span class="s1">x </span><span class="s0">in </span><span class="s1">range(cup_w):</span>
+                    <span class="s1">cup[x][pushDownY] = cup[x][pushDownY - </span><span class="s2">1</span><span class="s1">]</span>
+            <span class="s0">for </span><span class="s1">x </span><span class="s0">in </span><span class="s1">range(cup_w):</span>
+                <span class="s1">cup[x][</span><span class="s2">0</span><span class="s1">] = empty</span>
+            <span class="s1">removed_lines += </span><span class="s2">1</span>
+        <span class="s0">else</span><span class="s1">:</span>
+            <span class="s1">y -= </span><span class="s2">1</span>
+    <span class="s0">return </span><span class="s1">removed_lines</span>
+
+
+<span class="s0">def </span><span class="s1">convertCoords(block_x</span><span class="s0">, </span><span class="s1">block_y):</span>
+    <span class="s0">return </span><span class="s1">(side_margin + (block_x * block))</span><span class="s0">, </span><span class="s1">(top_margin + (block_y * block))</span>
+
+
+<span class="s0">def </span><span class="s1">drawBlock(block_x</span><span class="s0">, </span><span class="s1">block_y</span><span class="s0">, </span><span class="s1">color</span><span class="s0">, </span><span class="s1">pixelx=</span><span class="s0">None, </span><span class="s1">pixely=</span><span class="s0">None</span><span class="s1">):</span>
+    <span class="s4"># отрисовка квадратных блоков, из которых состоят фигуры</span>
+    <span class="s0">if </span><span class="s1">color == empty:</span>
+        <span class="s0">return</span>
+    <span class="s0">if </span><span class="s1">pixelx == </span><span class="s0">None and </span><span class="s1">pixely == </span><span class="s0">None</span><span class="s1">:</span>
+        <span class="s1">pixelx</span><span class="s0">, </span><span class="s1">pixely = convertCoords(block_x</span><span class="s0">, </span><span class="s1">block_y)</span>
+    <span class="s1">pg.draw.rect(display_surf</span><span class="s0">, </span><span class="s1">colors[color]</span><span class="s0">, </span><span class="s1">(pixelx + </span><span class="s2">1</span><span class="s0">, </span><span class="s1">pixely + </span><span class="s2">1</span><span class="s0">, </span><span class="s1">block - </span><span class="s2">1</span><span class="s0">, </span><span class="s1">block - </span><span class="s2">1</span><span class="s1">)</span><span class="s0">, </span><span class="s2">0</span><span class="s0">, </span><span class="s2">3</span><span class="s1">)</span>
+    <span class="s1">pg.draw.rect(display_surf</span><span class="s0">, </span><span class="s1">lightcolors[color]</span><span class="s0">, </span><span class="s1">(pixelx + </span><span class="s2">1</span><span class="s0">, </span><span class="s1">pixely + </span><span class="s2">1</span><span class="s0">, </span><span class="s1">block - </span><span class="s2">4</span><span class="s0">, </span><span class="s1">block - </span><span class="s2">4</span><span class="s1">)</span><span class="s0">, </span><span class="s2">0</span><span class="s0">, </span><span class="s2">3</span><span class="s1">)</span>
+    <span class="s1">pg.draw.circle(display_surf</span><span class="s0">, </span><span class="s1">colors[color]</span><span class="s0">, </span><span class="s1">(pixelx + block / </span><span class="s2">2</span><span class="s0">, </span><span class="s1">pixely + block / </span><span class="s2">2</span><span class="s1">)</span><span class="s0">, </span><span class="s2">5</span><span class="s1">)</span>
+
+
+<span class="s0">def </span><span class="s1">gamecup(cup):</span>
+    <span class="s4"># граница игрового поля-стакана</span>
+    <span class="s1">pg.draw.rect(display_surf</span><span class="s0">, </span><span class="s1">brd_color</span><span class="s0">, </span><span class="s1">(side_margin - </span><span class="s2">4</span><span class="s0">, </span><span class="s1">top_margin - </span><span class="s2">4</span><span class="s0">, </span><span class="s1">(cup_w * block) + </span><span class="s2">8</span><span class="s0">, </span><span class="s1">(cup_h * block) + </span><span class="s2">8</span><span class="s1">)</span><span class="s0">,</span>
+                 <span class="s2">5</span><span class="s1">)</span>
+
+    <span class="s4"># фон игрового поля</span>
+
+    <span class="s1">pg.draw.rect(display_surf</span><span class="s0">, </span><span class="s1">bg_color</span><span class="s0">, </span><span class="s1">(side_margin</span><span class="s0">, </span><span class="s1">top_margin</span><span class="s0">, </span><span class="s1">block * cup_w</span><span class="s0">, </span><span class="s1">block * cup_h))</span>
+
+    <span class="s0">for </span><span class="s1">x </span><span class="s0">in </span><span class="s1">range(cup_w):</span>
+        <span class="s0">for </span><span class="s1">y </span><span class="s0">in </span><span class="s1">range(cup_h):</span>
+            <span class="s1">drawBlock(x</span><span class="s0">, </span><span class="s1">y</span><span class="s0">, </span><span class="s1">cup[x][y])</span>
+
+
+
+<span class="s0">def </span><span class="s1">drawInfo(points</span><span class="s0">, </span><span class="s1">level):</span>
+    <span class="s1">pointsSurf = basic_font.render(</span><span class="s3">f'Баллы: </span><span class="s0">{</span><span class="s1">points</span><span class="s0">}</span><span class="s3">'</span><span class="s0">, True, </span><span class="s1">txt_color)</span>
+    <span class="s1">pointsRect = pointsSurf.get_rect()</span>
+    <span class="s1">pointsRect.topleft = (window_w - </span><span class="s2">200</span><span class="s0">, </span><span class="s2">350</span><span class="s1">)</span>
+    <span class="s1">display_surf.blit(pointsSurf</span><span class="s0">, </span><span class="s1">pointsRect)</span>
+
+    <span class="s1">levelSurf = basic_font.render(</span><span class="s3">f'Уровень: </span><span class="s0">{</span><span class="s1">level</span><span class="s0">}</span><span class="s3">'</span><span class="s0">, True, </span><span class="s1">txt_color)</span>
+    <span class="s1">levelRect = levelSurf.get_rect()</span>
+    <span class="s1">levelRect.topleft = (window_w - </span><span class="s2">200</span><span class="s0">, </span><span class="s2">400</span><span class="s1">)</span>
+    <span class="s1">display_surf.blit(levelSurf</span><span class="s0">, </span><span class="s1">levelRect)</span>
+
+    <span class="s1">pausebSurf = basic_font.render(</span><span class="s3">'Пауза: пробел'</span><span class="s0">, True, </span><span class="s1">info_color)</span>
+    <span class="s1">pausebRect = pausebSurf.get_rect()</span>
+    <span class="s1">pausebRect.topleft = (window_w - </span><span class="s2">200</span><span class="s0">, </span><span class="s2">450</span><span class="s1">)</span>
+    <span class="s1">display_surf.blit(pausebSurf</span><span class="s0">, </span><span class="s1">pausebRect)</span>
+
+    <span class="s1">escbSurf = basic_font.render(</span><span class="s3">'Выход: Esc'</span><span class="s0">, True, </span><span class="s1">info_color)</span>
+    <span class="s1">escbRect = escbSurf.get_rect()</span>
+    <span class="s1">escbRect.topleft = (window_w - </span><span class="s2">200</span><span class="s0">, </span><span class="s2">500</span><span class="s1">)</span>
+    <span class="s1">display_surf.blit(escbSurf</span><span class="s0">, </span><span class="s1">escbRect)</span>
+
+
+<span class="s0">def </span><span class="s1">drawFig(fig</span><span class="s0">, </span><span class="s1">pixelx=</span><span class="s0">None, </span><span class="s1">pixely=</span><span class="s0">None</span><span class="s1">):</span>
+    <span class="s1">figToDraw = figures[fig[</span><span class="s3">'shape'</span><span class="s1">]][fig[</span><span class="s3">'rotation'</span><span class="s1">]]</span>
+    <span class="s0">if </span><span class="s1">pixelx == </span><span class="s0">None and </span><span class="s1">pixely == </span><span class="s0">None</span><span class="s1">:</span>
+        <span class="s1">pixelx</span><span class="s0">, </span><span class="s1">pixely = convertCoords(fig[</span><span class="s3">'x'</span><span class="s1">]</span><span class="s0">, </span><span class="s1">fig[</span><span class="s3">'y'</span><span class="s1">])</span>
+
+    <span class="s4"># отрисовка элементов фигур</span>
+    <span class="s0">for </span><span class="s1">x </span><span class="s0">in </span><span class="s1">range(fig_w):</span>
+        <span class="s0">for </span><span class="s1">y </span><span class="s0">in </span><span class="s1">range(fig_h):</span>
+            <span class="s0">if </span><span class="s1">figToDraw[y][x] != empty:</span>
+                <span class="s1">drawBlock(</span><span class="s0">None, None, </span><span class="s1">fig[</span><span class="s3">'color'</span><span class="s1">]</span><span class="s0">, </span><span class="s1">pixelx + (x * block)</span><span class="s0">, </span><span class="s1">pixely + (y * block))</span>
+
+
+<span class="s0">def </span><span class="s1">drawnextFig(fig):  </span><span class="s4"># превью следующей фигуры</span>
+    <span class="s1">nextSurf = basic_font.render(</span><span class="s3">'Следующая:'</span><span class="s0">, True, </span><span class="s1">txt_color)</span>
+    <span class="s1">nextRect = nextSurf.get_rect()</span>
+    <span class="s1">nextRect.topleft = (window_w - </span><span class="s2">200</span><span class="s0">, </span><span class="s2">20</span><span class="s1">)</span>
+    <span class="s1">display_surf.blit(nextSurf</span><span class="s0">, </span><span class="s1">nextRect)</span>
+    <span class="s1">drawFig(fig</span><span class="s0">, </span><span class="s1">pixelx=window_w - </span><span class="s2">200</span><span class="s0">, </span><span class="s1">pixely=</span><span class="s2">100</span><span class="s1">)</span>
+
+
+<span class="s0">if </span><span class="s1">__name__ == </span><span class="s3">'__main__'</span><span class="s1">:</span>
+    <span class="s1">main()</span></pre>
+</body>
+</html>
